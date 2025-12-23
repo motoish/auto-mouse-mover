@@ -27,9 +27,13 @@
 - 自动创建 GitHub Release
 
 **所需 Secrets**：
-- `NPM_TOKEN`: npm 访问令牌
-- `PYPI_TOKEN`: PyPI API 令牌
-- `TEST_PYPI_TOKEN` (可选): TestPyPI 令牌
+- `NPM_TOKEN`: npm 访问令牌（必需，用于发布到 npm）
+- `PYPI_TOKEN`: PyPI API 令牌（必需，用于发布到 PyPI）
+- `TEST_PYPI_TOKEN` (可选): TestPyPI 令牌（用于测试发布）
+
+**如何配置 Secrets：**
+
+详见下方 [配置 Secrets](#配置-secrets) 章节。
 
 **使用示例**：
 ```bash
@@ -97,30 +101,111 @@ git push origin v1.0.1
 
 ## 配置 Secrets
 
-### 获取 npm Token
+### 步骤 1: 获取 npm Token
 
-1. 访问 https://www.npmjs.com/settings/YOUR_USERNAME/tokens
-2. 点击 "Generate New Token"
-3. 选择 "Automation" 类型
-4. 复制生成的 token
-5. 在 GitHub 仓库设置中添加为 Secret：`NPM_TOKEN`
+1. **登录 npm 账户**
+   - 访问 https://www.npmjs.com/
+   - 如果没有账户，先注册：https://www.npmjs.com/signup
 
-### 获取 PyPI Token
+2. **创建 Access Token**
+   - 访问 https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+   - 点击 "Generate New Token" 按钮
+   - 选择类型：**"Automation"**（用于 CI/CD，推荐）
+   - 点击 "Generate Token"
+   - **⚠️ 重要：立即复制 token**（只显示一次！格式类似：`npm_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`）
 
-1. 访问 https://pypi.org/manage/account/token/
-2. 点击 "Add API token"
-3. 输入 token 名称（如：`github-actions`）
-4. 选择作用域（整个账户或特定项目）
-5. 复制生成的 token（只显示一次！）
-6. 在 GitHub 仓库设置中添加为 Secret：`PYPI_TOKEN`
+3. **验证包名可用性（可选）**
+   ```bash
+   npm view auto-mouse-mover
+   ```
+   - 如果返回 404，说明包名可用
+   - 如果包名已被占用，需要修改 `package.json` 中的 `name` 字段
 
-### 配置 Secrets 步骤
+### 步骤 2: 获取 PyPI Token
 
-1. 访问 GitHub 仓库
-2. 点击 "Settings" → "Secrets and variables" → "Actions"
-3. 点击 "New repository secret"
-4. 输入名称和值
-5. 点击 "Add secret"
+1. **登录 PyPI 账户**
+   - 访问 https://pypi.org/
+   - 如果没有账户，先注册：https://pypi.org/account/register/
+
+2. **创建 API Token**
+   - 访问 https://pypi.org/manage/account/token/
+   - 点击 "Add API token" 按钮
+   - 输入 token 名称（如：`github-actions-auto-mouse-mover`）
+   - 选择作用域：
+     - **"Entire account"** - 可以发布所有项目（推荐用于个人项目）
+     - **"Project: auto-mouse-mover"** - 只能发布特定项目（更安全，需要先注册包名）
+   - 点击 "Add token"
+   - **⚠️ 重要：立即复制 token**（只显示一次！格式类似：`pypi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`）
+
+3. **验证包名可用性（可选）**
+   - 访问 https://pypi.org/project/auto-mouse-mover/
+   - 如果显示 404，说明包名可用
+   - 如果包名已被占用，需要修改 `pyproject.toml` 中的 `name` 字段
+
+### 步骤 3: 在 GitHub 中配置 Secrets
+
+1. **打开仓库设置**
+   - 访问你的 GitHub 仓库：`https://github.com/YOUR_USERNAME/auto-mouse-mover`
+   - 点击顶部菜单的 **"Settings"**（设置）
+
+2. **进入 Secrets 配置**
+   - 在左侧菜单中找到 **"Secrets and variables"**
+   - 点击 **"Actions"**
+
+3. **添加 NPM_TOKEN**
+   - 点击 **"New repository secret"** 按钮
+   - **Name（名称）**：输入 `NPM_TOKEN`（必须完全一致）
+   - **Secret（值）**：粘贴之前复制的 npm token
+   - 点击 **"Add secret"**
+
+4. **添加 PYPI_TOKEN**
+   - 再次点击 **"New repository secret"** 按钮
+   - **Name（名称）**：输入 `PYPI_TOKEN`（必须完全一致）
+   - **Secret（值）**：粘贴之前复制的 PyPI token
+   - 点击 **"Add secret"**
+
+5. **（可选）添加 TEST_PYPI_TOKEN**
+   - 如果需要测试发布到 TestPyPI
+   - 访问 https://test.pypi.org/manage/account/token/
+   - 创建 token（步骤与 PyPI 相同）
+   - 在 GitHub 中添加为 `TEST_PYPI_TOKEN`
+
+### 步骤 4: 验证配置
+
+1. **检查 Secrets 是否已添加**
+   - 在 GitHub 仓库 Settings → Secrets and variables → Actions
+   - 应该能看到：
+     - ✅ `NPM_TOKEN`
+     - ✅ `PYPI_TOKEN`
+     - （可选）`TEST_PYPI_TOKEN`
+
+2. **测试发布（可选）**
+   - 可以手动触发 `publish.yml` 工作流进行测试
+   - 或者等待 release-please 自动触发
+
+### 常见问题
+
+**Q: npm token 需要什么权限？**
+- Automation token 默认有发布权限，无需额外配置
+- 确保你的 npm 账户有权限发布到 `auto-mouse-mover` 包名
+
+**Q: PyPI token 需要什么权限？**
+- 选择 "Entire account" 或 "Project: auto-mouse-mover" 都可以
+- 如果选择项目级别，需要先注册包名（首次发布时会自动注册）
+
+**Q: 如何验证 token 是否有效？**
+- npm: 运行 `npm whoami --registry=https://registry.npmjs.org/`（需要先配置 token）
+- PyPI: 可以尝试手动发布一次测试
+
+**Q: token 泄露了怎么办？**
+- 立即在对应平台删除旧 token
+- 在 GitHub 中更新 Secret 为新 token
+
+**Q: 发布失败怎么办？**
+- 检查 Secrets 是否正确配置（名称必须完全一致）
+- 检查包名是否已被占用（npm/PyPI）
+- 检查版本号是否已存在
+- 查看 GitHub Actions 日志获取详细错误信息
 
 ## 故障排除
 
