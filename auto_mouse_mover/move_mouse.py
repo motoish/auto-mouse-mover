@@ -93,22 +93,12 @@ def main():
   auto-mouse-mover -i 30              # 每30秒移动一次
   auto-mouse-mover -i 120 -d 3600     # 每120秒移动一次，运行1小时
   python -m auto_mouse_mover         # 使用模块方式运行
-        """
+        """,
     )
 
-    parser.add_argument(
-        "-i", "--interval",
-        type=int,
-        default=60,
-        help="鼠标移动间隔（秒），默认60秒"
-    )
+    parser.add_argument("-i", "--interval", type=int, default=60, help="鼠标移动间隔（秒），默认60秒")
 
-    parser.add_argument(
-        "-d", "--duration",
-        type=int,
-        default=None,
-        help="运行时长（秒），默认无限运行"
-    )
+    parser.add_argument("-d", "--duration", type=int, default=None, help="运行时长（秒），默认无限运行")
 
     args = parser.parse_args()
 
