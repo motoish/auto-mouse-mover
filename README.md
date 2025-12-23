@@ -223,6 +223,10 @@ MIT License
 ```bash
 # 安装开发依赖（首次使用）
 make install-dev
+# 或使用 requirements-dev.txt
+pip install -r requirements-dev.txt
+# 或使用 pyproject.toml
+pip install -e ".[dev]"
 
 # 运行所有 linter
 make lint

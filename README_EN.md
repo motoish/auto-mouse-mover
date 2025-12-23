@@ -223,6 +223,10 @@ Use Makefile to simplify commands:
 ```bash
 # Install development dependencies (first time)
 make install-dev
+# Or use requirements-dev.txt
+pip install -r requirements-dev.txt
+# Or use pyproject.toml
+pip install -e ".[dev]"
 
 # Run all linters
 make lint

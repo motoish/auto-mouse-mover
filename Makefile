@@ -18,7 +18,8 @@ help:
 # Install development dependencies
 install-dev:
 	@echo "Installing Python development dependencies..."
-	pip install flake8 black pylint mypy yamllint pytest pytest-cov
+	@echo "Using requirements-dev.txt..."
+	pip install -r requirements-dev.txt
 	@echo "Installing Node.js development dependencies..."
 	npm install -g markdownlint-cli
 	@echo "Note: shellcheck needs to be installed separately:"
