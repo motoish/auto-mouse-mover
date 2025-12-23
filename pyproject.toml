@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "auto-mouse-mover"
+name = "mouse-keepalive"
 version = "1.0.0"
 description = "A cross-platform tool to automatically move the mouse at specified intervals to prevent system sleep or lock"
 readme = "README.md"
