@@ -1,0 +1,146 @@
+---
+name: Build Release Assets
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., 1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            artifact_name: auto-mouse-mover-linux-x86_64
+          - os: macos-latest
+            platform: darwin
+            artifact_name: auto-mouse-mover-macos-x86_64
+          - os: windows-latest
+            platform: win32
+            artifact_name: auto-mouse-mover-windows-x86_64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            VERSION=${VERSION#v}
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pyautogui
+
+      - name: Build executable
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          ARTIFACT_NAME="${{ matrix.artifact_name }}"
+          
+          if [ "${{ matrix.platform }}" == "win32" ]; then
+            pyinstaller --onefile ^
+              --name auto-mouse-mover ^
+              --hidden-import pyautogui ^
+              --hidden-import pyscreeze ^
+              --console ^
+              auto_mouse_mover/__main__.py
+            cd dist
+            powershell -Command "Compress-Archive -Path auto-mouse-mover.exe -DestinationPath ${ARTIFACT_NAME}-v${VERSION}.zip -Force"
+            cd ..
+          else
+            pyinstaller --onefile \
+              --name auto-mouse-mover \
+              --hidden-import pyautogui \
+              --hidden-import pyscreeze \
+              --console \
+              auto_mouse_mover/__main__.py
+            cd dist
+            if [ "${{ matrix.platform }}" == "darwin" ]; then
+              zip -r ${ARTIFACT_NAME}-v${VERSION}.zip auto-mouse-mover
+            else
+              tar czf ${ARTIFACT_NAME}-v${VERSION}.tar.gz auto-mouse-mover
+            fi
+            cd ..
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}-v${{ steps.version.outputs.version }}
+          path: |
+            dist/*.zip
+            dist/*.tar.gz
+            dist/*.exe
+          retention-days: 30
+
+  upload-to-release:
+    name: Upload to GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            VERSION=${VERSION#v}
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+          tag_name: v${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

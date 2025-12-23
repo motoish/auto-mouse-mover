@@ -169,12 +169,12 @@ jobs:
           echo "Release version: $VERSION"
 
       - name: Create Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.version.outputs.version }}
-          release_name: Release v${{ steps.version.outputs.version }}
+          name: Release v${{ steps.version.outputs.version }}
           body: |
             ## 🎉 Release v${{ steps.version.outputs.version }}
 
@@ -194,6 +194,14 @@ jobs:
             ```bash
             pip install auto-mouse-mover
             ```
+
+            ### 💻 Standalone Executables
+
+            Pre-built executables for Windows, macOS, and Linux are available in the Assets section below.
+
+            - **Windows**: `auto-mouse-mover-windows-x86_64-v${{ steps.version.outputs.version }}.zip`
+            - **macOS**: `auto-mouse-mover-macos-x86_64-v${{ steps.version.outputs.version }}.zip`
+            - **Linux**: `auto-mouse-mover-linux-x86_64-v${{ steps.version.outputs.version }}.tar.gz`
 
             ### 📝 Changes
 
