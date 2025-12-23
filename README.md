@@ -153,6 +153,29 @@ pip install yamllint
 yamllint .github/workflows/*.yml
 ```
 
+## 依赖管理
+
+项目使用 [Renovate](https://github.com/renovatebot/renovate) 自动维护依赖版本：
+
+- **自动更新**: 每月第一个工作日上午 11 点前自动检查并更新依赖
+- **自动合并**: Patch 版本更新会自动通过测试后合并
+- **分组管理**: 相关依赖会被分组到同一个 PR 中
+- **安全更新**: 安全相关的更新会优先处理
+
+### Renovate 配置
+
+配置文件位于 `renovate.json`，主要特性：
+
+- 自动维护 Python 依赖（requirements.txt）
+- 自动维护 GitHub Actions 版本
+- 自动维护 npm 依赖（如 markdownlint-cli）
+- Patch 版本自动合并
+- Minor/Major 版本需要手动审查
+
+### 自动批准机制
+
+当 Renovate 创建的 PR 通过所有测试后，GitHub Actions 会自动批准并合并（仅限 patch 版本更新）。
+
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request！
