@@ -1,113 +1,117 @@
-# Auto Mouse Mover
+# 自动移动鼠标工具
 
-一个可以指定时间间隔自动移动鼠标的工具，支持 macOS 和 Windows 系统。
+一个跨平台的自动移动鼠标工具，可以防止系统进入休眠或锁定状态。支持 macOS 和 Windows 系统。
 
-## 功能特性
+## 功能特点
 
-- ✅ 支持 macOS 和 Windows
+- ✅ 跨平台支持（macOS 和 Windows）
 - ✅ 可自定义移动间隔时间
-- ✅ 最小化移动距离（仅移动1像素，几乎不可见）
-- ✅ 多种实现方式（Shell脚本和Python脚本）
+- ✅ 可设置运行时长
+- ✅ 鼠标移动几乎无感知（移动后立即返回原位置）
+- ✅ 实时显示运行状态
+
+## 系统要求
+
+- Python 3.6 或更高版本
+- pyautogui 库
+
+## 安装
+
+### 1. 安装 Python 依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+或者直接安装：
+
+```bash
+pip install pyautogui
+```
+
+### 2. 给脚本添加执行权限（macOS/Linux）
+
+```bash
+chmod +x move_mouse.sh
+chmod +x move_mouse.py
+```
 
 ## 使用方法
 
-### macOS
+### macOS / Linux
 
-#### 方式1: 使用 Bash 脚本
+使用 Shell 脚本：
 
 ```bash
-# 给脚本添加执行权限
-chmod +x move-mouse.sh
+# 默认：每60秒移动一次，无限运行
+./move_mouse.sh
 
-# 使用默认间隔（60秒）
-./move-mouse.sh
+# 指定移动间隔为30秒
+./move_mouse.sh -i 30
 
-# 指定间隔时间（例如：每30秒移动一次）
-./move-mouse.sh 30
+# 指定移动间隔和运行时长（1小时 = 3600秒）
+./move_mouse.sh -i 120 -d 3600
 ```
 
-#### 方式2: 使用 Python 脚本（推荐，跨平台）
+或直接使用 Python 脚本：
 
 ```bash
-# 安装依赖
-pip install pyautogui
-
-# 使用默认间隔（60秒）
-python3 move-mouse.py
-
-# 指定间隔时间（例如：每30秒移动一次）
-python3 move-mouse.py 30
+python3 move_mouse.py
+python3 move_mouse.py -i 30
+python3 move_mouse.py -i 120 -d 3600
 ```
 
 ### Windows
 
-#### 方式1: 使用 PowerShell 脚本
-
-```powershell
-# 使用默认间隔（60秒）
-.\move-mouse.ps1
-
-# 指定间隔时间（例如：每30秒移动一次）
-.\move-mouse.ps1 30
-```
-
-**注意**: 如果遇到执行策略限制，需要先运行：
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-#### 方式2: 使用 Python 脚本（推荐，跨平台）
+使用批处理文件：
 
 ```cmd
-# 安装依赖
-pip install pyautogui
+REM 默认：每60秒移动一次，无限运行
+move_mouse.bat
 
-# 使用默认间隔（60秒）
-python move-mouse.py
+REM 指定移动间隔为30秒
+move_mouse.bat -i 30
 
-# 指定间隔时间（例如：每30秒移动一次）
-python move-mouse.py 30
+REM 指定移动间隔和运行时长
+move_mouse.bat -i 120 -d 3600
 ```
 
-## 停止脚本
+或直接使用 Python 脚本：
 
-按 `Ctrl+C` 停止脚本运行。
+```cmd
+python move_mouse.py
+python move_mouse.py -i 30
+python move_mouse.py -i 120 -d 3600
+```
 
-## 文件说明
+## 参数说明
 
-- `move-mouse.sh` - macOS/Linux 的 Bash 脚本
-- `move-mouse.ps1` - Windows 的 PowerShell 脚本
-- `move-mouse.py` - 跨平台的 Python 脚本（推荐使用）
+- `-i, --interval`: 鼠标移动间隔（秒），默认60秒
+- `-d, --duration`: 运行时长（秒），默认无限运行
+- `-h, --help`: 显示帮助信息
 
-## 依赖要求
+## 使用示例
 
-### Python 版本
-- Python 3.6+
-- pyautogui 库
-
-安装方法：
 ```bash
-pip install pyautogui
+# 每30秒移动一次鼠标，防止系统锁定
+./move_mouse.sh -i 30
+
+# 每2分钟移动一次，运行1小时后自动停止
+./move_mouse.sh -i 120 -d 3600
+
+# 停止程序：按 Ctrl+C
 ```
-
-### macOS Bash 版本
-- macOS 系统
-- 需要授予终端"辅助功能"权限（系统偏好设置 > 安全性与隐私 > 辅助功能）
-
-### Windows PowerShell 版本
-- Windows 系统
-- PowerShell 5.1+ 或 PowerShell Core
 
 ## 工作原理
 
-脚本会定期（根据指定的时间间隔）将鼠标移动1像素，然后立即移回原位置。这个移动非常微小，几乎不可见，但足以防止系统进入睡眠模式或触发屏幕保护程序。
+脚本会定期将鼠标移动1-2像素，然后立即移回原位置。这样既不会影响用户的正常使用，又能防止系统检测到鼠标静止而进入休眠或锁定状态。
 
 ## 注意事项
 
-1. **macOS 权限**: 首次运行时，macOS 可能会要求授予终端"辅助功能"权限
-2. **Windows 执行策略**: PowerShell 脚本可能需要调整执行策略
-3. **Python 版本**: 推荐使用 Python 脚本，因为它跨平台且更易维护
-4. **使用场景**: 适用于需要保持系统活跃状态的场景，如长时间下载、编译等
+1. 程序运行时，按 `Ctrl+C` 可以随时停止
+2. 鼠标移动幅度很小，几乎不会被察觉
+3. 如果系统有屏幕保护程序，此工具可以帮助防止触发
+4. 在某些安全软件可能会检测到自动鼠标移动行为
 
 ## 许可证
 
