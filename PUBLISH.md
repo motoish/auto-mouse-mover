@@ -310,13 +310,119 @@ git push origin v1.0.0
 2. 所有必需的文件都在 `MANIFEST.in` 中
 3. Python 版本符合要求（>=3.11）
 
-## 自动化发布（可选）
+## 自动化发布（推荐）
 
-可以使用 GitHub Actions 自动发布：
+项目已配置 GitHub Actions 工作流来自动化发布流程。
 
-1. 创建 `.github/workflows/publish-pypi.yml`
-2. 配置 PyPI API token 为 GitHub Secret
-3. 在发布标签时自动触发发布
+### 配置 Secrets
+
+在 GitHub 仓库设置中添加以下 Secrets：
+
+1. **NPM_TOKEN**: npm 访问令牌
+   - 访问 https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+   - 创建 "Automation" 类型的 token
+   - 添加到 GitHub Secrets 作为 `NPM_TOKEN`
+
+2. **PYPI_TOKEN**: PyPI API 令牌
+   - 访问 https://pypi.org/manage/account/token/
+   - 创建新的 API token
+   - 添加到 GitHub Secrets 作为 `PYPI_TOKEN`
+
+3. **TEST_PYPI_TOKEN** (可选): TestPyPI 测试令牌
+   - 访问 https://test.pypi.org/manage/account/token/
+   - 创建新的 API token
+   - 添加到 GitHub Secrets 作为 `TEST_PYPI_TOKEN`
+
+### 发布流程
+
+#### 方式一：使用版本升级工作流（推荐）
+
+1. **升级版本号**：
+   - 访问 GitHub Actions 页面
+   - 运行 "Version Bump Helper" 工作流
+   - 选择版本类型（patch/minor/major）
+   - 选择是否创建 Pull Request
+
+2. **合并 PR**（如果创建了 PR）：
+   - 审查并合并版本升级的 PR
+
+3. **创建标签并发布**：
+   ```bash
+   # 查看最新版本号
+   git pull
+   
+   # 创建标签（版本号从 package.json 或 pyproject.toml 获取）
+   git tag v1.0.1
+   git push origin v1.0.1
+   ```
+
+4. **自动发布**：
+   - 推送标签后，GitHub Actions 会自动：
+     - 发布到 npm
+     - 发布到 PyPI
+     - 创建 GitHub Release
+
+#### 方式二：手动触发发布
+
+1. **更新版本号**：
+   - 手动编辑 `package.json`、`pyproject.toml` 和 `auto_mouse_mover/__init__.py`
+   - 提交并推送到 main 分支
+
+2. **手动触发发布**：
+   - 访问 GitHub Actions 页面
+   - 运行 "Publish to npm and PyPI" 工作流
+   - 输入版本号（如：1.0.1）
+   - 工作流会自动发布到两个平台
+
+#### 方式三：使用 Git 标签（最简单）
+
+```bash
+# 1. 更新版本号（手动编辑文件或使用 version-bump 工作流）
+# 编辑 package.json, pyproject.toml, auto_mouse_mover/__init__.py
+
+# 2. 提交更改
+git add package.json pyproject.toml auto_mouse_mover/__init__.py
+git commit -m "chore: bump version to 1.0.1"
+
+# 3. 创建并推送标签
+git tag v1.0.1
+git push origin main
+git push origin v1.0.1
+
+# 4. GitHub Actions 会自动检测标签并发布
+```
+
+### 工作流说明
+
+#### publish.yml
+
+- **触发条件**：
+  - 推送版本标签（格式：`v*.*.*`）
+  - 手动触发（workflow_dispatch）
+- **功能**：
+  - 自动发布到 npm
+  - 自动发布到 PyPI
+  - 自动创建 GitHub Release
+
+#### version-bump.yml
+
+- **触发条件**：手动触发（workflow_dispatch）
+- **功能**：
+  - 自动升级版本号（patch/minor/major）
+  - 更新所有版本文件
+  - 可选创建 Pull Request
+
+### 验证发布
+
+发布完成后，可以验证：
+
+```bash
+# 验证 npm
+npm view auto-mouse-mover version
+
+# 验证 PyPI
+pip index versions auto-mouse-mover
+```
 
 ## 维护
 
