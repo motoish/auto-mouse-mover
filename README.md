@@ -117,7 +117,45 @@ python move_mouse.py -i 120 -d 3600
 
 MIT License
 
+## 代码质量检查
+
+项目使用 GitHub Actions 自动运行多种 linter 来确保代码质量：
+
+- **Python**: flake8, black, pylint, mypy
+- **Shell**: ShellCheck
+- **Markdown**: markdownlint
+- **YAML**: yamllint
+- **Batch**: 基础语法检查
+
+每次推送代码或创建 Pull Request 时，GitHub Actions 会自动运行这些检查。
+
+### 本地运行 Linter
+
+如果你想在本地运行这些检查：
+
+```bash
+# Python linting
+pip install flake8 black pylint mypy
+flake8 move_mouse.py
+black --check move_mouse.py
+pylint move_mouse.py
+mypy move_mouse.py
+
+# Shell linting (需要安装 shellcheck)
+shellcheck move_mouse.sh
+
+# Markdown linting (需要安装 markdownlint-cli)
+npm install -g markdownlint-cli
+markdownlint "*.md"
+
+# YAML linting
+pip install yamllint
+yamllint .github/workflows/*.yml
+```
+
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+在提交代码前，请确保所有 linter 检查通过。
 
