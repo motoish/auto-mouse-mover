@@ -5,7 +5,6 @@ REM 适用于 Windows 命令提示符和 PowerShell
 setlocal
 
 set SCRIPT_DIR=%~dp0
-set PYTHON_SCRIPT=%SCRIPT_DIR%move_mouse.py
 
 REM 检查 Python 是否安装
 where python >nul 2>&1
@@ -37,8 +36,8 @@ if %ERRORLEVEL% NEQ 0 (
     )
 )
 
-REM 运行 Python 脚本并传递所有参数
-%PYTHON_CMD% "%PYTHON_SCRIPT%" %*
+REM 运行 Python 模块并传递所有参数
+%PYTHON_CMD% -m auto_mouse_mover %*
 
 endlocal
 

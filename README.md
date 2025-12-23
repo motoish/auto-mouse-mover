@@ -78,7 +78,6 @@ pip install pyautogui
 
 ```bash
 chmod +x move_mouse.sh
-chmod +x move_mouse.py
 ```
 
 ## 使用方法
@@ -125,12 +124,12 @@ python -m auto_mouse_mover -i 30
 ./move_mouse.sh -i 120 -d 3600
 ```
 
-或直接使用 Python 脚本：
+或直接使用 Python 模块：
 
 ```bash
-python3 move_mouse.py
-python3 move_mouse.py -i 30
-python3 move_mouse.py -i 120 -d 3600
+python3 -m auto_mouse_mover
+python3 -m auto_mouse_mover -i 30
+python3 -m auto_mouse_mover -i 120 -d 3600
 ```
 
 #### Windows
@@ -148,12 +147,12 @@ REM 指定移动间隔和运行时长
 move_mouse.bat -i 120 -d 3600
 ```
 
-或直接使用 Python 脚本：
+或直接使用 Python 模块：
 
 ```cmd
-python move_mouse.py
-python move_mouse.py -i 30
-python move_mouse.py -i 120 -d 3600
+python -m auto_mouse_mover
+python -m auto_mouse_mover -i 30
+python -m auto_mouse_mover -i 120 -d 3600
 ```
 
 ## 参数说明
@@ -222,10 +221,10 @@ MIT License
 ```bash
 # Python linting
 pip install flake8 black pylint mypy
-flake8 move_mouse.py
-black --check move_mouse.py
-pylint move_mouse.py
-mypy move_mouse.py
+flake8 auto_mouse_mover/
+black --check auto_mouse_mover/
+pylint auto_mouse_mover/
+mypy auto_mouse_mover/
 
 # Shell linting (需要安装 shellcheck)
 shellcheck move_mouse.sh

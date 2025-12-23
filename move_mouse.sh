@@ -6,7 +6,6 @@
 
 # 获取脚本所在目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PYTHON_SCRIPT="$SCRIPT_DIR/move_mouse.py"
 
 # 检测操作系统
 detect_os() {
@@ -63,8 +62,8 @@ main() {
     
     check_pyautogui
     
-    # 解析参数并传递给 Python 脚本
-    $PYTHON_CMD "$PYTHON_SCRIPT" "$@"
+    # 解析参数并传递给 Python 模块
+    $PYTHON_CMD -m auto_mouse_mover "$@"
 }
 
 # 运行主函数
