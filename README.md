@@ -265,29 +265,29 @@ yamllint .github/workflows/*.yml
 
 本项目同时支持发布到 PyPI 和 npm。
 
-### 快速发布
+### 自动发布（推荐）✨
 
-**最简单的方式**：创建并推送版本标签
+本项目使用 [release-please](https://github.com/googleapis/release-please-action) 自动管理版本和发布流程。
 
+**工作原理：**
+1. 当你提交符合 [Conventional Commits](https://www.conventionalcommits.org/) 规范的代码时，release-please 会自动：
+   - 根据提交类型决定版本号（`feat:` → minor, `fix:` → patch, `BREAKING CHANGE` → major）
+   - 创建包含版本更新和 CHANGELOG 的 Pull Request
+   - 当你合并 PR 后，自动创建 GitHub Release 和 tag
+   - 触发发布工作流，自动发布到 npm 和 PyPI
+
+**提交规范示例：**
 ```bash
-# 1. 更新版本号（编辑 package.json, pyproject.toml, auto_mouse_mover/__init__.py）
-# 2. 提交更改
-git add package.json pyproject.toml auto_mouse_mover/__init__.py
-git commit -m "chore: bump version to 1.0.1"
-git push origin main
-
-# 3. 创建并推送标签
-git tag v1.0.1
-git push origin v1.0.1
-
-# 4. GitHub Actions 会自动发布到 npm 和 PyPI！
+feat: add new feature          # 1.0.0 → 1.1.0
+fix: fix bug                  # 1.0.0 → 1.0.1
+feat!: breaking change        # 1.0.0 → 2.0.0
+docs: update documentation    # 1.0.0 → 1.0.1
 ```
 
-详细发布指南请查看：
-- [RELEASE.md](RELEASE.md) - 快速发布指南
-- [PUBLISH.md](PUBLISH.md) - 详细发布文档
+**手动触发发布：**
+- 前往 GitHub Actions → "Release Please" → "Run workflow"
 
-### 快速发布
+### 手动发布（备用）
 
 **PyPI:**
 ```bash

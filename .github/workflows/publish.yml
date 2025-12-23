@@ -4,19 +4,21 @@ name: Publish to npm and PyPI
 on:
   push:
     tags:
-      - 'v*.*.*'  # 触发格式: v1.0.0, v1.2.3 等
+      - 'v*.*.*'  # Triggered by release-please or manual tags
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to publish (e.g., 1.0.0)'
         required: true
         type: string
+  release:
+    types: [published]  # Triggered when release-please creates a release
 
 jobs:
   publish-npm:
     name: Publish to npm
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'release'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,6 +37,10 @@ jobs:
           if [ "${{ github.event_name }}" == "push" ]; then
             VERSION=${GITHUB_REF#refs/tags/v}
             echo "Extracted version from tag: $VERSION"
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            VERSION=${VERSION#v}
+            echo "Extracted version from release: $VERSION"
           else
             VERSION="${{ github.event.inputs.version }}"
             echo "Using version from input: $VERSION"
@@ -86,6 +92,10 @@ jobs:
           if [ "${{ github.event_name }}" == "push" ]; then
             VERSION=${GITHUB_REF#refs/tags/v}
             echo "Extracted version from tag: $VERSION"
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            VERSION=${VERSION#v}
+            echo "Extracted version from release: $VERSION"
           else
             VERSION="${{ github.event.inputs.version }}"
             echo "Using version from input: $VERSION"
@@ -149,6 +159,9 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
             VERSION=${GITHUB_REF#refs/tags/v}
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            VERSION=${VERSION#v}
           else
             VERSION="${{ github.event.inputs.version }}"
           fi
