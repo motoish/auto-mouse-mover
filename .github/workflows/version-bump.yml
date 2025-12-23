@@ -61,10 +61,10 @@ jobs:
         run: |
           BUMP_TYPE="${{ github.event.inputs.bump_type }}"
           CURRENT_VERSION="${{ steps.current_version.outputs.npm_version }}"
-          
+
           # 解析版本号
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-          
+
           case "$BUMP_TYPE" in
             major)
               NEW_MAJOR=$((MAJOR + 1))
@@ -79,7 +79,7 @@ jobs:
               NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
               ;;
           esac
-          
+
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "Bumping $BUMP_TYPE version: $CURRENT_VERSION -> $NEW_VERSION"
 
@@ -159,4 +159,3 @@ jobs:
           if [ "${{ github.event.inputs.create_pr }}" == "true" ]; then
             echo "- **Pull Request**: Created" >> $GITHUB_STEP_SUMMARY
           fi
-
