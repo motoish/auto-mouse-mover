@@ -96,6 +96,8 @@ jobs:
         uses: ./.github/actions/publish
         with:
           version: ${{ steps.version.outputs.version }}
+          npm-token: ${{ secrets.NPM_TOKEN }}
+          pypi-token: ${{ secrets.PYPI_TOKEN }}
 
   upload-release:
     name: Upload to GitHub Release

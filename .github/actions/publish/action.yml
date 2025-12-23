@@ -13,6 +13,12 @@ inputs:
     description: 'Whether to publish to PyPI'
     required: false
     default: 'true'
+  npm-token:
+    description: 'NPM token for publishing'
+    required: false
+  pypi-token:
+    description: 'PyPI token for publishing'
+    required: false
 
 runs:
   using: 'composite'
@@ -39,7 +45,7 @@ runs:
         npm ci
         npm publish --access public
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
 
     - name: Publish to PyPI
       if: inputs.publish-pypi == 'true'
@@ -58,5 +64,5 @@ runs:
         twine upload dist/*
       env:
         TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        TWINE_PASSWORD: ${{ inputs.pypi-token }}
 
