@@ -1,3 +1,71 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auto-mouse-mover"
+version = "1.0.0"
+description = "A cross-platform tool to automatically move the mouse at specified intervals to prevent system sleep or lock"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "motoish"}
+]
+keywords = [
+    "mouse",
+    "automation",
+    "prevent-sleep",
+    "idle",
+    "keep-alive",
+    "cross-platform",
+    "cli",
+    "tool",
+    "macos",
+    "windows",
+    "linux"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Hardware",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "pyautogui>=0.9.54",
+]
+
+[project.optional-dependencies]
+dev = [
+    "flake8>=6.0.0",
+    "black>=23.0.0",
+    "pylint>=2.17.0",
+    "mypy>=1.0.0",
+]
+
+[project.scripts]
+auto-mouse-mover = "auto_mouse_mover:main"
+amm = "auto_mouse_mover:main"
+
+[project.urls]
+Homepage = "https://github.com/motoish/auto-mouse-mover"
+Documentation = "https://github.com/motoish/auto-mouse-mover#readme"
+Repository = "https://github.com/motoish/auto-mouse-mover"
+Issues = "https://github.com/motoish/auto-mouse-mover/issues"
+
+[tool.setuptools]
+packages = ["auto_mouse_mover"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt"]
+
 [tool.black]
 line-length = 120
 target-version = ['py311']

@@ -19,9 +19,10 @@ wheels/
 .installed.cfg
 *.egg
 
-# Python lib (but keep our Node.js lib/)
+# Python lib (but keep our Node.js lib/ and Python package)
 /lib/
 !/lib/moveMouse.js
+!auto_mouse_mover/
 
 # Virtual Environment
 venv/
