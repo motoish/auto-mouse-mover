@@ -1,3 +1,4 @@
+---
 name: Auto-Approve Renovate PRs
 
 on:
@@ -44,11 +45,11 @@ jobs:
       (contains(github.event.pull_request.user.login, 'renovate') ||
        contains(join(github.event.pull_request.labels.*.name, ','), 'renovate')) &&
       needs.test.result == 'success'
-    
+
     permissions:
       pull-requests: write
       contents: read
-    
+
     steps:
       - name: Approve PR
         uses: actions/github-script@v7
@@ -63,4 +64,3 @@ jobs:
               body: '✅ Tests passed! Auto-approved by GitHub Actions.'
             });
             console.log(`PR approved: ${review.id}`);
-

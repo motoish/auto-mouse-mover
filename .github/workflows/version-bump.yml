@@ -1,3 +1,4 @@
+---
 name: Version Bump Helper
 
 on:
@@ -47,11 +48,11 @@ jobs:
           # 从 package.json 获取版本
           NPM_VERSION=$(node -p "require('./package.json').version")
           echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
-          
+
           # 从 pyproject.toml 获取版本
           PYPI_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
           echo "pypi_version=$PYPI_VERSION" >> $GITHUB_OUTPUT
-          
+
           echo "Current npm version: $NPM_VERSION"
           echo "Current PyPI version: $PYPI_VERSION"
 
@@ -131,7 +132,8 @@ jobs:
           pr_body: |
             ## Version Bump
 
-            Bumping version from **${{ steps.current_version.outputs.npm_version }}** to **${{ steps.new_version.outputs.new_version }}**
+            Bumping version from **${{ steps.current_version.outputs.npm_version }}**
+            to **${{ steps.new_version.outputs.new_version }}**
 
             ### Changes
             - Updated `package.json`
