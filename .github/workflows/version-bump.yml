@@ -124,31 +124,35 @@ jobs:
 
       - name: Create Pull Request
         if: github.event.inputs.create_pr == 'true'
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: ${{ steps.create_branch.outputs.branch_name }}
-          destination_branch: main
-          pr_title: "chore: bump version to ${{ steps.new_version.outputs.new_version }}"
-          pr_body: |
-            ## Version Bump
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_BODY=$(cat <<EOF
+          ## Version Bump
 
-            Bumping version from **${{ steps.current_version.outputs.npm_version }}**
-            to **${{ steps.new_version.outputs.new_version }}**
+          Bumping version from **${{ steps.current_version.outputs.npm_version }}**
+          to **${{ steps.new_version.outputs.new_version }}**
 
-            ### Changes
-            - Updated `package.json`
-            - Updated `pyproject.toml`
-            - Updated `auto_mouse_mover/__init__.py`
+          ### Changes
+          - Updated \`package.json\`
+          - Updated \`pyproject.toml\`
+          - Updated \`auto_mouse_mover/__init__.py\`
 
-            ### Next Steps
-            After merging this PR, create a tag to trigger the publish workflow:
-            ```bash
-            git tag v${{ steps.new_version.outputs.new_version }}
-            git push origin v${{ steps.new_version.outputs.new_version }}
-            ```
+          ### Next Steps
+          After merging this PR, create a tag to trigger the publish workflow:
+          \`\`\`bash
+          git tag v${{ steps.new_version.outputs.new_version }}
+          git push origin v${{ steps.new_version.outputs.new_version }}
+          \`\`\`
 
-            Or use the GitHub Actions workflow to publish manually.
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          Or use the GitHub Actions workflow to publish manually.
+          EOF
+          )
+          gh pr create \
+            --base main \
+            --head ${{ steps.create_branch.outputs.branch_name }} \
+            --title "chore: bump version to ${{ steps.new_version.outputs.new_version }}" \
+            --body "$PR_BODY"
 
       - name: Output summary
         run: |
